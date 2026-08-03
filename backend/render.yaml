@@ -1,0 +1,72 @@
+services:
+  # ─── Backend Spring Boot API ──────────────────────────────────
+  - type: web
+    name: smart-wms-api
+    runtime: java
+    region: oregon
+    plan: starter
+
+    # Build: run Maven package (skip tests in CI — run them separately)
+    buildCommand: cd backend && mvn clean package -DskipTests
+
+    # Start: run the packaged JAR
+    startCommand: java -jar backend/target/smart-wms-backend-1.0.0.jar
+
+    # Health check path (actuator)
+    healthCheckPath: /actuator/health
+
+    # Auto-deploy on push to main
+    autoDeploy: true
+
+    # ─── Environment Variables ─────────────────────────────────
+    # Set these in the Render Dashboard → Service → Environment
+    envVars:
+      - key: PORT
+        value: 8080
+
+      - key: JAVA_VERSION
+        value: "21"
+
+      # Database — use Render's managed MySQL or connect to PlanetScale/Aiven
+      # Set DATABASE_URL in Render Dashboard, e.g.:
+      # jdbc:mysql://db-host:3306/smart_wms?useSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - key: DATABASE_URL
+        sync: false   # Set manually in Render Dashboard
+
+      - key: DB_USERNAME
+        sync: false   # Set manually in Render Dashboard
+
+      - key: DB_PASSWORD
+        sync: false   # Set manually in Render Dashboard
+
+      # JWT — generate a secure 256-bit secret for production
+      - key: JWT_SECRET
+        sync: false   # Set manually in Render Dashboard
+
+      # CORS — add your Vercel frontend URL here
+      # Example: https://smart-wms.vercel.app,https://www.yourdomain.com
+      - key: CORS_ORIGINS
+        sync: false   # Set manually in Render Dashboard
+
+      # Frontend URL (for password reset / email verification links)
+      - key: FRONTEND_URL
+        sync: false   # Set manually in Render Dashboard
+
+      # Mail configuration (optional — for password reset emails)
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+
+      - key: MAIL_PORT
+        value: "587"
+
+      - key: MAIL_USERNAME
+        sync: false   # Set manually in Render Dashboard
+
+      - key: MAIL_PASSWORD
+        sync: false   # App password for Gmail — set in Render Dashboard
+
+      - key: MAIL_FROM
+        sync: false   # e.g. noreply@yourapp.com
+
+      - key: SPRING_PROFILES_ACTIVE
+        value: production

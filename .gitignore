@@ -1,0 +1,38 @@
+# Node & Frontend
+node_modules
+dist
+dist-ssr
+*.local
+.env
+
+# Java & Backend
+target/
+backend/target/
+backend/logs/
+*.class
+*.jar
+*.war
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE & OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.iws
+*.iml
+*.ipr
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
