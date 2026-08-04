@@ -57,7 +57,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>,
 
     @Query("SELECT s FROM Supplier s WHERE s.deleted = false " +
            "AND (:search IS NULL OR :search = '' OR LOWER(s.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.companyName) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-           "AND (:status IS NULL OR :status = '' OR s.status = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(s.status AS string) = :status) " +
            "AND (:region IS NULL OR :region = '' OR s.state = :region)")
     Page<Supplier> findForSupplierReport(
         @Param("search") String search,
@@ -67,7 +67,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>,
 
     @Query("SELECT COALESCE(AVG(s.rating), 0.0) FROM Supplier s WHERE s.deleted = false " +
            "AND (:search IS NULL OR :search = '' OR LOWER(s.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.companyName) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-           "AND (:status IS NULL OR :status = '' OR s.status = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(s.status AS string) = :status) " +
            "AND (:region IS NULL OR :region = '' OR s.state = :region)")
     Double findAverageRatingFiltered(
         @Param("search") String search,
@@ -76,7 +76,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>,
 
     @Query("SELECT s.state, COUNT(s) FROM Supplier s WHERE s.deleted = false AND s.state IS NOT NULL " +
            "AND (:search IS NULL OR :search = '' OR LOWER(s.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.companyName) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-           "AND (:status IS NULL OR :status = '' OR s.status = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(s.status AS string) = :status) " +
            "AND (:region IS NULL OR :region = '' OR s.state = :region) " +
            "GROUP BY s.state ORDER BY COUNT(s) DESC")
     List<Object[]> countByRegionFiltered(
@@ -84,11 +84,12 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>,
         @Param("status") String status,
         @Param("region") String region);
 
+    // Note: NULLS LAST removed — replaced with CASE for H2/MySQL portability
     @Query("SELECT s FROM Supplier s WHERE s.deleted = false " +
            "AND (:search IS NULL OR :search = '' OR LOWER(s.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.companyName) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-           "AND (:status IS NULL OR :status = '' OR s.status = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(s.status AS string) = :status) " +
            "AND (:region IS NULL OR :region = '' OR s.state = :region) " +
-           "ORDER BY s.rating DESC NULLS LAST")
+           "ORDER BY CASE WHEN s.rating IS NULL THEN 1 ELSE 0 END ASC, s.rating DESC")
     List<Supplier> findTopSuppliersByRatingFiltered(
         @Param("search") String search,
         @Param("status") String status,

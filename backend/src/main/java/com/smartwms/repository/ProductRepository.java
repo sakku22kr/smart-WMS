@@ -134,7 +134,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId)")
     Page<Product> findForProductReport(
         @org.springframework.data.repository.query.Param("search") String search,
@@ -148,7 +148,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId)")
     java.math.BigDecimal sumStockValueFiltered(
         @org.springframework.data.repository.query.Param("search") String search,
@@ -161,7 +161,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId)")
     Long sumStockQuantityFiltered(
         @org.springframework.data.repository.query.Param("search") String search,
@@ -174,7 +174,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) " +
            "GROUP BY p.category.name ORDER BY SUM(p.currentStock * p.sellingPrice) DESC")
     List<Object[]> countByCategoryFiltered(
@@ -188,7 +188,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) " +
            "GROUP BY p.supplier.id, p.supplier.name, p.supplier.code ORDER BY SUM(p.currentStock * p.sellingPrice) DESC")
     List<Object[]> countBySupplierFiltered(
@@ -198,7 +198,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
         @org.springframework.data.repository.query.Param("status") String status,
         @org.springframework.data.repository.query.Param("warehouseId") Long warehouseId);
 
-    @Query("SELECT CAST(p.status AS string), COUNT(p), COALESCE(SUM(p.currentStock * p.sellingPrice), 0) FROM Product p WHERE p.deleted = false " +
+    @Query("SELECT CAST(p.status AS java.lang.String), COUNT(p), COALESCE(SUM(p.currentStock * p.sellingPrice), 0) FROM Product p WHERE p.deleted = false " +
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
@@ -236,7 +236,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) " +
            "AND p.currentStock > 0 ORDER BY (p.currentStock * p.sellingPrice) DESC")
     List<Product> findTopProductsFiltered(
@@ -251,7 +251,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
            "AND (:search IS NULL OR :search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
            "AND (:supplierId IS NULL OR p.supplier.id = :supplierId) " +
-           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS string) = :status) " +
+           "AND (:status IS NULL OR :status = '' OR CAST(p.status AS java.lang.String) = :status) " +
            "AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) " +
            "ORDER BY p.createdAt DESC")
     List<Product> findRecentProductsFiltered(
