@@ -22,17 +22,13 @@ RUN addgroup -S smartwms && adduser -S smartwms -G smartwms
 # Copy JAR from build stage
 COPY --from=build /app/target/smart-wms-backend-1.0.0.jar app.jar
 
-# Set ownership
-RUN chown smartwms:smartwms app.jar
+# Create required runtime directories and set ownership for non-root user
+RUN mkdir -p /app/logs /app/uploads && chown -R smartwms:smartwms /app
 
 USER smartwms
 
 # Expose port
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-
-# Run
-ENTRYPOINT ["java", "-Xmx512m", "-jar", "app.jar"]
+# Run with MaxRAMPercentage so JVM auto-scales within Render 512MB RAM limit
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
