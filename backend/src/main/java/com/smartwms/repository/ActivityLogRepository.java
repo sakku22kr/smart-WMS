@@ -33,6 +33,6 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
     List<ActivityLog> findBySupplierId(@Param("supplierId") Long supplierId);
 
     /** Paginated activity logs related to a specific supplier. */
-    @Query(value = "SELECT * FROM activity_logs WHERE metadata LIKE CONCAT('%', :supplierId, '%') ORDER BY created_at DESC", countQuery = "SELECT COUNT(*) FROM activity_logs WHERE metadata LIKE CONCAT('%', :supplierId, '%')")
+    @Query(value = "SELECT * FROM activity_logs WHERE metadata LIKE CONCAT('%', :supplierId, '%') ORDER BY created_at DESC", countQuery = "SELECT COUNT(*) FROM activity_logs WHERE metadata LIKE CONCAT('%', :supplierId, '%')", nativeQuery = true)
     Page<ActivityLog> findBySupplierId(@Param("supplierId") Long supplierId, Pageable pageable);
 }
