@@ -94,10 +94,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
     @Query("SELECT p FROM Product p WHERE p.deleted = false ORDER BY p.currentStock DESC")
     List<Product> findTopProductsByStock(org.springframework.data.domain.Pageable pageable);
 
-    @Query("SELECT p.category.name as categoryName, COUNT(p) as cnt FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL GROUP BY p.category.name ORDER BY cnt DESC")
+    @Query("SELECT p.category.name as categoryName, COUNT(p) as cnt FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL GROUP BY p.category.name ORDER BY COUNT(p) DESC")
     List<Object[]> countProductsByCategory();
 
-    @Query("SELECT p.category.name as categoryName, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as totalValue FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL GROUP BY p.category.name ORDER BY totalValue DESC")
+    @Query("SELECT p.category.name as categoryName, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as totalValue FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL GROUP BY p.category.name ORDER BY COALESCE(SUM(p.currentStock * p.sellingPrice), 0) DESC")
     List<Object[]> sumValueByCategory();
 
     // ─── Filtered Queries for Inventory Reports ──────────────
@@ -118,10 +118,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
     @Query("SELECT COALESCE(SUM(p.currentStock * p.sellingPrice), 0) FROM Product p WHERE p.deleted = false AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId)")
     java.math.BigDecimal sumSellingValueByWarehouse(@org.springframework.data.repository.query.Param("warehouseId") Long warehouseId);
 
-    @Query("SELECT p.category.name as categoryName, COUNT(p) as cnt, COALESCE(SUM(p.currentStock), 0) as totalStock, COALESCE(SUM(p.currentStock * p.purchasePrice), 0) as purchaseValue, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as sellingValue FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) GROUP BY p.category.name ORDER BY sellingValue DESC")
+    @Query("SELECT p.category.name as categoryName, COUNT(p) as cnt, COALESCE(SUM(p.currentStock), 0) as totalStock, COALESCE(SUM(p.currentStock * p.purchasePrice), 0) as purchaseValue, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as sellingValue FROM Product p WHERE p.deleted = false AND p.category IS NOT NULL AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) GROUP BY p.category.name ORDER BY COALESCE(SUM(p.currentStock * p.sellingPrice), 0) DESC")
     List<Object[]> sumValueByCategoryFiltered(@org.springframework.data.repository.query.Param("warehouseId") Long warehouseId);
 
-    @Query("SELECT p.warehouse.name as whName, p.warehouse.code as whCode, COUNT(p) as cnt, COALESCE(SUM(p.currentStock), 0) as totalStock, COALESCE(SUM(p.currentStock * p.purchasePrice), 0) as purchaseValue, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as sellingValue FROM Product p WHERE p.deleted = false AND p.warehouse IS NOT NULL AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) GROUP BY p.warehouse.name, p.warehouse.code ORDER BY sellingValue DESC")
+    @Query("SELECT p.warehouse.name as whName, p.warehouse.code as whCode, COUNT(p) as cnt, COALESCE(SUM(p.currentStock), 0) as totalStock, COALESCE(SUM(p.currentStock * p.purchasePrice), 0) as purchaseValue, COALESCE(SUM(p.currentStock * p.sellingPrice), 0) as sellingValue FROM Product p WHERE p.deleted = false AND p.warehouse IS NOT NULL AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) GROUP BY p.warehouse.name, p.warehouse.code ORDER BY COALESCE(SUM(p.currentStock * p.sellingPrice), 0) DESC")
     List<Object[]> sumValueByWarehouseFiltered(@org.springframework.data.repository.query.Param("warehouseId") Long warehouseId);
 
     @Query("SELECT p FROM Product p WHERE p.deleted = false AND (:warehouseId IS NULL OR p.warehouse.id = :warehouseId) AND p.currentStock > 0 ORDER BY (p.currentStock * p.sellingPrice) DESC")
